@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>Babysitter Application Form</title>
+  <title>Client Application Form</title>
   <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU"
     crossorigin="anonymous">
@@ -27,7 +27,6 @@
       z-index: 2;
       }
       .testbox {
-      display: flex;
       justify-content: center;
       align-items: center;
       height: inherit;
@@ -35,18 +34,16 @@
       }
       form {
       width: 100%;
-      padding: 20px;
       border-radius: 6px;
       background: #fff;
-      box-shadow: 0 0 30px 0 #8ebf42; 
-      width: 300px;
+      box-shadow: 0 0 30px 0 #8ebf42;
       }
       .banner {
       position: relative;
       height: 210px;
       background-image: url("/uploads/media/default/0001/01/a3df023f124a8bec3b213347404fe0a7318161de.jpeg");  
       background-size: cover;
-      display: flex;
+      display: none;
       justify-content: center;
       align-items: center;
       text-align: center;
@@ -67,7 +64,7 @@
       border-radius: 3px;
       }
       input {
-      width: calc(100% - 10px);
+      width: auto;
       padding: 5px;
       }
       select {
@@ -89,7 +86,7 @@
       }
       .item {
       position: relative;
-      margin: 10px 0;
+      margin: 10px 20px;
       }
       input[type="date"]::-webkit-inner-spin-button {
       display: none;
@@ -215,10 +212,39 @@
     <li><a href="/employee">Employee</a></li>
   </ul>
   <div class="testbox">
-    <form action="/post_order" method="post">
+
       <div class="banner">
         <h1>Order Form</h1>
       </div>
+      
+    <form action="/post_address" method="post">
+      <div class="item">
+          <p>Address</p>
+          <input type="text" name="address" required />
+          <div class="btn-block">
+            <button type="submit" href="/">Check Address</button>
+          </div>
+          <% if (latitude && longitude) { %>
+              <div>
+                <span>latitude: </span>
+                <span>
+                  <%= latitude %>
+                </span>
+                <span>Longitude: </span>
+                <span>
+                  <%= longitude %>
+                </span>
+              </div>
+          <% } %>
+          <div id="map"></div>
+      </div>
+    </form>
+
+    <form action="/post_order" method="post">
+      
+      <input type="text" name="latitude" required  value="<%= latitude %>" hidden/>
+      <input type="text" name="longitude" required value="<%= longitude %>" hidden/>
+
       <div class="item">
         <p>Product</p>
         <div class="name-item">
@@ -233,12 +259,46 @@
       <div class="item">
         <p>Quantity</p>
         <input type="number" name="quantity" required />
+        <p>Email</p>
+        <input type="email" name="email" required />
       </div>
       <div class="btn-block">
         <button type="submit" href="/">Order</button>
       </div>
     </form>
   </div>
+  <style>
+    #map {
+      height: 400px;
+      width: 100%;
+    }
+  </style>
+  <% if (latitude && longitude) { %>
+    <script>
+        // Initialize and add the map
+        function initMap() {
+          // The location of Uluru
+          var Lat = <%= latitude %>;
+          var Lon = <%= longitude %>;
+          const uluru = { lat: Lat, lng: Lon };
+          // The map, centered at Uluru
+          const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 18,
+            center: uluru,
+          });
+          // The marker, positioned at Uluru
+          const marker = new google.maps.Marker({
+            position: uluru,
+            map: map,
+          });
+        }
+      </script>
+  <% } %>
+  
+  <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBe_vx9IKML7NVxRJ9awaoCZzzCgGqxrfg&callback=initMap&libraries=&v=weekly"
+      async
+    ></script>
 </body>
 
 </html>

@@ -2,11 +2,40 @@
 
 let express = require('express');
 let router = new express.Router();
+let nodeGeocoder = require('node-geocoder');
 const https = require('http')
 
 /* GET home page. */
+
 router.get('/', (req, res) => {
-    res.render('index');
+    res.render('index.ejs', {
+        latitude: null,
+        longitude: null
+    });
+});
+
+router.post('/post_address', (req, res) => {
+    let response = "";
+    let options = {
+        provider: 'openstreetmap'
+      };
+       
+      let geoCoder = nodeGeocoder(options);
+      geoCoder.geocode(req.body.address)
+        .then((res2)=> {
+            let jlat = JSON.stringify(res2[0].latitude)
+            let jlon = JSON.stringify(res2[0].longitude)
+            res.render('index.ejs', {
+                latitude: jlat,
+                longitude: jlon
+            });
+        })
+        .catch((err)=> {
+            console.log(err);
+        });
+
+    
+    
 });
 
 router.post('/post_order', (req, res) => {
@@ -20,6 +49,18 @@ router.post('/post_order', (req, res) => {
             "requested_quantity": {
                 "value": req.body.quantity,
                 "type": "integer"
+            },
+            "client_email": {
+                "value": req.body.email,
+                "type": "String"
+            },
+            "latitude": {
+                "value": req.body.latitude,
+                "type": "String"
+            },
+            "longitude": {
+                "value": req.body.longitude,
+                "type": "String"
             }
         },
         "businessKey": "1"
